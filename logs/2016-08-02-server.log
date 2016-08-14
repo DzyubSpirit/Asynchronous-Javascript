@@ -1,0 +1,4 @@
+2016-08-02T00:00:00.038Z	Worker(17469/S1N1)	[impress]	Terminated worker
+2016-08-02T00:00:00.044Z	Worker(17475/S1N2)	[impress]	Terminated worker
+2016-08-02T00:00:00.051Z	Worker(17481/S1N3)	[impress]	Terminated worker
+2016-08-02T00:00:00.056Z	Master(17459/S1N0)	[impress]	Stopped server

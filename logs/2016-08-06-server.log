@@ -1,0 +1,6 @@
+2016-08-06T00:00:00.059Z	Worker(22698/S1N3)	[impress]	Terminated worker
+2016-08-06T00:00:00.064Z	Worker(22686/S1N1)	[impress]	Terminated worker
+2016-08-06T00:00:00.074Z	Worker(22692/S1N2)	[impress]	Terminated worker
+2016-08-06T00:00:00.108Z	Master(22676/S1N0)	[impress]	Stopped server
+2016-08-06T00:00:01.583Z	Worker(23075/S1N3)	[impress]	HTTPS listen on *:443 by Worker(23075/S1N3)
+2016-08-06T00:00:01.614Z	Worker(23075/S1N3)	[impress]	Terminated worker
