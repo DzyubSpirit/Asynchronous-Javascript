@@ -1,4 +1,5 @@
-let fs = require('fs');
+let fs = require('fs'),
+    path =require('path');
 
 const dateLength = 10,
       datetimeLength = 24;
@@ -21,7 +22,7 @@ function getLogsBetween(startTime, endTime) {
     let startDate = Date.parse(`${date}T${startTime}Z`),
         endDate = Date.parse(`${date}T${endTime}Z`);
     logTypes.forEach(logType => {
-      let filename = 'logs/'+ makeFilename(date, logType);
+      let filename = 'logs'+path.sep+ makeFilename(date, logType);
       fs.readFile(filename, function(err, data) {
         if (err) return;
   
