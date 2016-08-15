@@ -11,7 +11,7 @@ function makeUrl(methodName, params) {
     paramPairs.push( encodeURIComponent(prop) + '='
                    + encodeURIComponent(params[prop]));
   }
-  return `https://api.vk.com/method/${methodName}?${paramPairs.join('&')}`;
+  return `https://api.vk.com/method/${methodName}?${paramPairs.join('&')}&v=5.53`;
 }
 
 function getAllText(url, callback) {
@@ -22,17 +22,18 @@ function getAllText(url, callback) {
   });
 }
 
+console.log(makeUrl('users.get', { user_ids: personId }));
 getAllText(makeUrl('users.get', { user_ids: personId }), humanInfoStr => {
   let humanInfo = JSON.parse(humanInfoStr).response[0];
   getAllText(makeUrl('photos.get', {
-    owner_id: humanInfo.uid,
+    owner_id: humanInfo.id,
     album_id: 'profile',
     rev: true,
     photo_sizes: true
   }), photosInfoStr => {
     let photosInfo = JSON.parse(photosInfoStr).response;  
-    let urls = photosInfo.map(
-          item => [item.pid, item.sizes[item.sizes.length-1].src]);
+    let urls = photosInfo.items.map(
+          item => [item.id, item.sizes[item.sizes.length-1].src]);
     urls.forEach(([id, url]) => {
       http.get(url, res => res.pipe(fs.createWriteStream('img'+path.sep+id)));
     });
