@@ -3,15 +3,14 @@ var fs = require('fs'),
 
 function concatFilesIn(sources, destination) {
   let destStream = fs.createWriteStream(destination);
-  var endedStreamsCount = 0;
-  sources.map(x => fs.createReadStream(x))
-         .forEach(sourceStream => {
-            sourceStream.on('end', _ => {
-              endedStreamsCount++;
-              if (endedStreamsCount === sources.length) destStream.end();
-            });
-            pipe(sourceStream, destStream);
-         });
+  let endedStreamsCount = 0;
+  sources.map(x => fs.createReadStream(x)).forEach(sourceStream => {
+    sourceStream.on('end', () => {
+      endedStreamsCount++;
+      if (endedStreamsCount === sources.length) destStream.end();
+    });
+    pipe(sourceStream, destStream);
+  });
 }
 
 function pipe(sourceStream, destinationStream) {
@@ -19,7 +18,7 @@ function pipe(sourceStream, destinationStream) {
 }
 
 function inLogs(filename) {
-  return 'logs'+path.sep+filename;
+  return 'logs' + path.sep + filename;
 }
 
 concatFilesIn([

@@ -20,10 +20,7 @@ function getAllText(url, callback) {
   });
 }
 
-let logStream = fs.createWriteStream('my.log', { flags: 'a' });
-
-var loadingPersonsCount = 0,
-    loadingPhotosCount = 0;
+let logStream = fs.createWriteStream('my.log');
 
 readPersonIds('config.json');
 
@@ -61,23 +58,16 @@ function getUserPhotos(userInfo) {
     logStream.write(`Get image ids and urls: ${idAndUrls}\n`);
     loadingPhotosCount += idAndUrls.length;
     idAndUrls.forEach(getImageByIdAndUrl);
-    loadingPersonsCount--;
   });
 }
 
 function getImageByIdAndUrl([id, url]) {
-  loadingPhotosCount++;
   http.get(url, res => {
    let writeStream = fs.createWriteStream(
          ['img', path.sep, id].join(''));
    res.pipe(writeStream);
    res.on('end', _ => {
      logStream.write(`Got image from url ${url}\n`);
-      loadingPhotosCount--;
-      if (loadingPersonsCount === 0 && loadingPhotosCount === 0) {
-        logStream.write('Session end');
-        logStream.end();
-      }
    });
-  });
+ });
 }

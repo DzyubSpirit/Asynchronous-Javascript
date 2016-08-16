@@ -4,7 +4,7 @@ let https = require('https'),
     path = require('path');
 
 function makeUrl(methodName, params) {
-  var paramPairs = [];
+  let paramPairs = [];
   for (let prop in params) {
     paramPairs.push( encodeURIComponent(prop) + '='
                    + encodeURIComponent(params[prop]));
@@ -16,14 +16,14 @@ let logStream = fs.createWriteStream('my.log', { flags: 'a' });
 fs.readFile('config.json', (err, dataStr) => {
   let personIds = JSON.parse(dataStr).personIds;
   logStream.write(`Reading personIds from config: ${personIds.toString()}\n`);
-  var loadingPersonsCount = personIds.length,
+  let loadingPersonsCount = personIds.length,
       loadingImagesCount = 0;
-  for (var personIdIndex = 0; personIdIndex < personIds.length; personIdIndex++) {
+  for (let personIdIndex = 0; personIdIndex < personIds.length; personIdIndex++) {
     let personId = personIds[personIdIndex];
     https.get(makeUrl('users.get', { user_ids: personId }), humanInfoStream => {
-      var humanInfoStr = '';
+      let humanInfoStr = '';
       humanInfoStream.on('data', chunk => humanInfoStr += chunk);
-      humanInfoStream.on('end', _ => {
+      humanInfoStream.on('end', () => {
         let humanInfo = JSON.parse(humanInfoStr).response[0];
         logStream.write(`Got info about ${JSON.stringify(humanInfo)}\n`);
         https.get(makeUrl('photos.get', {
@@ -32,23 +32,23 @@ fs.readFile('config.json', (err, dataStr) => {
           rev: true,
           photo_sizes: true
         }), photosInfoStream => {
-          var photosInfoStr = '';
+          let photosInfoStr = '';
           photosInfoStream.on('data', chunk => photosInfoStr += chunk);
-          photosInfoStream.on('end', _ => {
-            let photosInfo = JSON.parse(photosInfoStr).response;  
+          photosInfoStream.on('end', () => {
+            let photosInfo = JSON.parse(photosInfoStr).response;
             let urls = photosInfo.items.map(
                   item => [item.id, item.sizes[item.sizes.length-1].src]);
 
             loadingPersonsCount--;
             loadingImagesCount += urls.length;
             logStream.write(`Get image ids and urls: ${urls}\n`);
-            for (var i = 0; i < urls.length; i++) {
+            for (let i = 0; i < urls.length; i++) {
               let [id, url] = urls[i];
               http.get(url, imgStream => {
                 let writeStream = fs.createWriteStream(
                       ['img', path.sep, humanInfo.id, id].join(''));
                 imgStream.on('data', chunk => writeStream.write(chunk));
-                imgStream.on('end', _ => {
+                imgStream.on('end', () => {
                   writeStream.end();
                   logStream.write(`Got image from url ${url}\n`);
                   loadingImagesCount--;
