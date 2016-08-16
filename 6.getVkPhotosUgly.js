@@ -12,11 +12,11 @@ function makeUrl(methodName, params) {
   return `https://api.vk.com/method/${methodName}?${paramPairs.join('&')}&v=5.53`;
 }
 
-let logStream = fs.createWriteStream('my.log');
+let logStream = fs.createWriteStream('my.log', { flags: 'a' });
 fs.readFile('config.json', (err, dataStr) => {
   let personIds = JSON.parse(dataStr).personIds;
   logStream.write(`Reading personIds from config: ${personIds.toString()}\n`);
-  let isAllRequestsSent = false,
+  let loadingPersonsCount = personIds.length,
       loadingImagesCount = 0;
   for (let personIdIndex = 0; personIdIndex < personIds.length; personIdIndex++) {
     let personId = personIds[personIdIndex];
@@ -39,6 +39,8 @@ fs.readFile('config.json', (err, dataStr) => {
             let urls = photosInfo.items.map(
                   item => [item.id, item.sizes[item.sizes.length-1].src]);
 
+            loadingPersonsCount--;
+            loadingImagesCount += urls.length;
             logStream.write(`Get image ids and urls: ${urls}\n`);
             for (let i = 0; i < urls.length; i++) {
               let [id, url] = urls[i];
@@ -50,14 +52,12 @@ fs.readFile('config.json', (err, dataStr) => {
                   writeStream.end();
                   logStream.write(`Got image from url ${url}\n`);
                   loadingImagesCount--;
-                  if (isAllRequestsSent && loadingImagesCount === 0) {
+                  if (loadingPersonsCount === 0 && loadingImagesCount === 0) {
+                    logStream.write('Session end\n');
                     logStream.end();
                   }
                 });
               });
-              loadingImagesCount++;
-              if (i === urls.length - 1 && personIdIndex === personIds.length - 1)
-                isAllRequestsSent = true;
             }
           });
         });
