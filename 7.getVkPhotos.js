@@ -20,7 +20,12 @@ function getAllText(url, callback) {
   });
 }
 
-let logStream = fs.createWriteStream('my.log');
+let logStream = fs.createWriteStream('my.log', { flags: 'a' });
+
+var allPersons = false,
+    loadingPersonsCount = 0,
+    allPhotos = false,
+    loadingPhotosCount = 0;
 
 readPersonIds('config.json');
 
@@ -41,9 +46,11 @@ function getUsersInfo(personIds) {
       getUserPhotos(humanInfo);
     });
   });
+  allPersons = true;
 }
 
 function getUserPhotos(userInfo) {
+  loadingPersonsCount++;
   getAllText(makeUrl('photos.get', {
     owner_id: userInfo.id,
     album_id: 'profile',
@@ -56,16 +63,24 @@ function getUserPhotos(userInfo) {
 
     logStream.write(`Get image ids and urls: ${idAndUrls}\n`);
     idAndUrls.forEach(getImageByIdAndUrl);
+    loadingPersonsCount--;
+    allPhotos = allPersons && loadingPersonsCount === 0
   });
 }
 
 function getImageByIdAndUrl([id, url]) {
+  loadingPhotosCount++;
   http.get(url, res => {
    let writeStream = fs.createWriteStream(
          ['img', path.sep, id].join(''));
    res.pipe(writeStream);
    res.on('end', _ => {
      logStream.write(`Got image from url ${url}\n`);
+      loadingPhotosCount--;
+      if (allPhotos && loadingPhotosCount === 0) {
+        logStream.write('Session end');
+        logStream.end();
+      }
    });
- });
+  });
 }
