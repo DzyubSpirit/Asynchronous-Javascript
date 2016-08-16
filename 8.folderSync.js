@@ -9,8 +9,12 @@ if (process.argv[3]) {
   syncConfig.remotePort = process.argv[3];
 }
 
+if (process.argv[4]) {
+  syncConfig.folder = process.argv[4];
+}
+
 let clients = [],
-    clientSock = tryConnect(),
+    clientSock = tryConnect().on('error', () => { clientSock = null; }),
     fsChangingHandlers = {
       rename() {
       },
@@ -19,15 +23,16 @@ let clients = [],
     };
 
 net.createServer(c => {
-  clients.push(c);
-  if (c.localAddress.indexOf(syncConfig.host) !== -1) {
+  clients.push(c)
+  if (clientSock === null && c.localAddress.indexOf(syncConfig.host) !== -1) {
     clientSock = tryConnect();
   }
-}).listen(syncConfig.localPort, () => {
-  fs.watch(syncConfig.folder, (eventType, filename) => {
-    clients.forEach(client => {
-      client.write(`${eventType}:${filename}${PACKAGE_SEP}`);
-    });
+}).listen(syncConfig.localPort);
+
+fs.watch(syncConfig.folder, (eventType, filename) => {
+  console.log('Writtenn');
+  clients.forEach(client => {
+    client.write(`${eventType}:${filename}${PACKAGE_SEP}`);
   });
 });
 
@@ -40,11 +45,10 @@ function tryConnect() {
       if (ind !== -1) {
         let info = sockData.substring(0, ind),
             [eventType, filename] = info.split(':');
-        console.log('Why?')
         console.log(eventType + ' ' + filename);
         sockData = sockData.substring(ind + PACKAGE_SEP.length);
       }
     });
-  }).on('error', (err) => console.log(err));
+  });
   return clientSock;
 }
