@@ -16,7 +16,7 @@ function isTimeBetween(startDate, endDate, line) {
 
 function getLogsBetween(startTime, endTime) {
   let dates = ['2016-08-01', '2016-08-02', '2016-08-05', '2016-08-06'],
-      logTypes = ['cloud', 'debug', 'error', 'node', 'server', 'slow', 'warning'];
+      logTypes = ['debug', 'error', 'node', 'server', 'slow', 'warning'];
 
   dates.forEach(date => {
     let startDate = Date.parse(`${date}T${startTime}Z`),
