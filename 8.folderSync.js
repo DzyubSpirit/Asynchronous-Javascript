@@ -13,10 +13,8 @@ let clients = [],
     clientSock = tryConnect(),
     fsChangingHandlers = {
       rename() {
-        
       },
       change() {
-        
       }
     };
 
@@ -41,12 +39,12 @@ function tryConnect() {
       let ind = sockData.indexOf(PACKAGE_SEP);
       if (ind !== -1) {
         let info = sockData.substring(0, ind),
-            [eventType, filename] = info.split(':'); 
+            [eventType, filename] = info.split(':');
         console.log('Why?')
-        console.log(eventType+' '+filename);
+        console.log(eventType + ' ' + filename);
         sockData = sockData.substring(ind + PACKAGE_SEP.length);
       }
-    }); 
-  }).on('error', (err) => console.log(err)); 
+    });
+  }).on('error', (err) => console.log(err));
   return clientSock;
-} 
+}

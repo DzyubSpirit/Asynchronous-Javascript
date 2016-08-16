@@ -50,7 +50,7 @@ function getLink(allData, offset) {
         let ind4 = allData.indexOf(')', offset);
         if (ind4 !== -1) {
           offset = ind4 + 1;
-          newLink = allData.substring(ind3+1, ind4);
+          newLink = allData.substring(ind3 + 1, ind4);
         } else {
           end = true;
         }
