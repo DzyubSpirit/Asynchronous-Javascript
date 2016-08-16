@@ -3,7 +3,7 @@ let fs = require('fs'),
 
 const dateLength = 10,
       datetimeLength = 24;
-    
+
 function makeFilename(date, logType) {
   return `${date}-${logType}.log`;
 }
@@ -15,22 +15,21 @@ function isTimeBetween(startDate, endDate, line) {
 }
 
 function getLogsBetween(startTime, endTime) {
-  let dates = ['2016-08-01','2016-08-02','2016-08-05','2016-08-06',],
-      logTypes = ['cloud','debug','error','node','server','slow','warning'];
-  
+  let dates = ['2016-08-01', '2016-08-02', '2016-08-05', '2016-08-06'],
+      logTypes = ['cloud', 'debug', 'error', 'node', 'server', 'slow', 'warning'];
+
   dates.forEach(date => {
     let startDate = Date.parse(`${date}T${startTime}Z`),
         endDate = Date.parse(`${date}T${endTime}Z`);
     logTypes.forEach(logType => {
-      let filename = 'logs'+path.sep+ makeFilename(date, logType);
+      let filename = 'logs' + path.sep + makeFilename(date, logType);
       fs.readFile(filename, function(err, data) {
         if (err) return;
-  
         data.toString().split('\n')
-            .filter(isTimeBetween.bind(null, startDate, endDate))
-            .forEach(logRecord => {
-          console.log(`${logType}: ${logRecord}`); 
-        });
+          .filter(isTimeBetween.bind(null, startDate, endDate))
+          .forEach(logRecord => {
+            console.log(`${logType}: ${logRecord}`);
+          });
       });
     });
   });
