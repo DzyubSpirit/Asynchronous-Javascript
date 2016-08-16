@@ -22,9 +22,7 @@ function getAllText(url, callback) {
 
 let logStream = fs.createWriteStream('my.log', { flags: 'a' });
 
-var allPersons = false,
-    loadingPersonsCount = 0,
-    allPhotos = false,
+var loadingPersonsCount = 0,
     loadingPhotosCount = 0;
 
 readPersonIds('config.json');
@@ -39,6 +37,7 @@ function readPersonIds(filename) {
 }
 
 function getUsersInfo(personIds) {
+  loadingPersonsCount += personIds.length;
   personIds.forEach(personId => {
     getAllText(makeUrl('users.get', { user_ids: personId }), humanInfoStr => {
       let humanInfo = JSON.parse(humanInfoStr).response[0];
@@ -46,11 +45,9 @@ function getUsersInfo(personIds) {
       getUserPhotos(humanInfo);
     });
   });
-  allPersons = true;
 }
 
 function getUserPhotos(userInfo) {
-  loadingPersonsCount++;
   getAllText(makeUrl('photos.get', {
     owner_id: userInfo.id,
     album_id: 'profile',
@@ -62,9 +59,9 @@ function getUserPhotos(userInfo) {
           item => [item.id, item.sizes[item.sizes.length-1].src]);
 
     logStream.write(`Get image ids and urls: ${idAndUrls}\n`);
+    loadingPhotosCount += idAndUrls.length;
     idAndUrls.forEach(getImageByIdAndUrl);
     loadingPersonsCount--;
-    allPhotos = allPersons && loadingPersonsCount === 0
   });
 }
 
@@ -77,7 +74,7 @@ function getImageByIdAndUrl([id, url]) {
    res.on('end', _ => {
      logStream.write(`Got image from url ${url}\n`);
       loadingPhotosCount--;
-      if (allPhotos && loadingPhotosCount === 0) {
+      if (loadingPersonsCount === 0 && loadingPhotosCount === 0) {
         logStream.write('Session end');
         logStream.end();
       }
