@@ -6,8 +6,10 @@ let https = require('https'),
 function makeUrl(methodName, params) {
   let paramPairs = [];
   for (let prop in params) {
-    paramPairs.push( encodeURIComponent(prop) + '='
-                   + encodeURIComponent(params[prop]));
+    paramPairs.push(
+      encodeURIComponent(prop) + '=' +
+      encodeURIComponent(params[prop])
+    );
   }
   return `https://api.vk.com/method/${methodName}?${paramPairs.join('&')}&v=5.53`;
 }
@@ -37,8 +39,8 @@ fs.readFile('config.json', (err, dataStr) => {
           photosInfoStream.on('end', () => {
             let photosInfo = JSON.parse(photosInfoStr).response;
             let urls = photosInfo.items.map(
-                  item => [item.id, item.sizes[item.sizes.length-1].src]);
-
+              item => [item.id, item.sizes[item.sizes.length-1].src]
+            );
             loadingPersonsCount--;
             loadingImagesCount += urls.length;
             logStream.write(`Get image ids and urls: ${urls}\n`);
@@ -46,7 +48,8 @@ fs.readFile('config.json', (err, dataStr) => {
               let [id, url] = urls[i];
               http.get(url, imgStream => {
                 let writeStream = fs.createWriteStream(
-                      ['img', path.sep, humanInfo.id, id].join(''));
+                  ['img', path.sep, humanInfo.id, id].join('')
+                );
                 imgStream.on('data', chunk => writeStream.write(chunk));
                 imgStream.on('end', () => {
                   writeStream.end();

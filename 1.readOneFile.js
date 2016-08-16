@@ -13,6 +13,7 @@ function proccessFileData(err, data) {
 fs.readFile('test.txt', proccessFileData);
 fs.readFile('noFile', proccessFileData);
 
+/*
 function makeFilename(date, logType) {
   return `${date}-${logType}.log`;
 }
@@ -26,3 +27,4 @@ dates.forEach(date => {
     console.log(makeFilename(date, logType));
   });
 });
+*/

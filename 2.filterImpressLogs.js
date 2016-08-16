@@ -25,11 +25,11 @@ function getLogsBetween(startTime, endTime) {
       let filename = 'logs' + path.sep + makeFilename(date, logType);
       fs.readFile(filename, function(err, data) {
         if (err) return;
-        data.toString().split('\n')
-          .filter(isTimeBetween.bind(null, startDate, endDate))
-          .forEach(logRecord => {
-            console.log(`${logType}: ${logRecord}`);
-          });
+        data.toString().split('\n').filter(
+          isTimeBetween.bind(null, startDate, endDate)
+        ).forEach(logRecord => {
+          console.log(`${logType}: ${logRecord}`);
+        });
       });
     });
   });

@@ -6,8 +6,10 @@ let https = require('https'),
 function makeUrl(methodName, params) {
   var paramPairs = [];
   for (let prop in params) {
-    paramPairs.push( encodeURIComponent(prop) + '='
-                   + encodeURIComponent(params[prop]));
+    paramPairs.push(
+      encodeURIComponent(prop) + '=' +
+      encodeURIComponent(params[prop])
+    );
   }
   return `https://api.vk.com/method/${methodName}?${paramPairs.join('&')}&v=5.53`;
 }
@@ -16,7 +18,7 @@ function getAllText(url, callback) {
   https.get(url, res => {
     var dataAll = '';
     res.on('data', data => dataAll += data);
-    res.on('end', _ => callback(dataAll));
+    res.on('end', () => callback(dataAll));
   });
 }
 
@@ -51,9 +53,10 @@ function getUserPhotos(userInfo) {
     rev: true,
     photo_sizes: true
   }), photosInfoStr => {
-    let photosInfo = JSON.parse(photosInfoStr).response;  
+    let photosInfo = JSON.parse(photosInfoStr).response;
     let idAndUrls = photosInfo.items.map(
-          item => [item.id, item.sizes[item.sizes.length-1].src]);
+      item => [item.id, item.sizes[item.sizes.length-1].src]
+    );
 
     logStream.write(`Get image ids and urls: ${idAndUrls}\n`);
     loadingPhotosCount += idAndUrls.length;
@@ -64,9 +67,10 @@ function getUserPhotos(userInfo) {
 function getImageByIdAndUrl([id, url]) {
   http.get(url, res => {
    let writeStream = fs.createWriteStream(
-         ['img', path.sep, id].join(''));
+     ['img', path.sep, id].join('')
+   );
    res.pipe(writeStream);
-   res.on('end', _ => {
+   res.on('end', () => {
      logStream.write(`Got image from url ${url}\n`);
    });
  });
