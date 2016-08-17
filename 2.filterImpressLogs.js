@@ -27,6 +27,7 @@ function getLogsBetween(startTime, endTime) {
         if (err) return;
         data.toString().split('\n').filter(
           isTimeBetween.bind(null, startDate, endDate)
+//        x => isTimeBetween(startDate, endDat, x)
         ).forEach(logRecord => {
           console.log(`${logType}: ${logRecord}`);
         });

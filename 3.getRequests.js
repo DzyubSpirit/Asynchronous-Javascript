@@ -8,9 +8,7 @@ https.get(url, res => {
   let allData = '',
       bracketState = 'lookFor[';
 
-  res.on('data', data => {
-    allData += data;
-  });
+  res.on('data', data => allData += data);
 
   res.on('end', () => {
     let offset = 0;
