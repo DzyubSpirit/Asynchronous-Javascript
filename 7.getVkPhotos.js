@@ -36,7 +36,6 @@ function readPersonIds(filename) {
 }
 
 function getUsersInfo(personIds) {
-  loadingPersonsCount += personIds.length;
   personIds.forEach(personId => {
     getAllText(makeUrl('users.get', { user_ids: personId }), humanInfoStr => {
       let humanInfo = JSON.parse(humanInfoStr).response[0];
@@ -59,7 +58,6 @@ function getUserPhotos(userInfo) {
     );
 
     logStream.write(`Get image ids and urls: ${idAndUrls}\n`);
-    loadingPhotosCount += idAndUrls.length;
     idAndUrls.forEach(getImageByIdAndUrl);
   });
 }
